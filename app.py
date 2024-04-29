@@ -17,6 +17,10 @@ class App:
         # Initialize OpenGL
         glClearColor(0.1, 0.1, 0.1, 1.0)
         
+        # Enable and set up blending for transparency
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        
         # Load and use shaders from files
         self.shader = self.create_shader("shaders/vertex.vert", "shaders/fragment.frag")
         glUseProgram(self.shader)
@@ -28,7 +32,7 @@ class App:
         self.triangle = Triangle()
         
         # Load glitch texture
-        self.glitch_texture = Material("images/20230714-_DSC8634.jpg")
+        self.image_texture = Material("images/middle_finger.jpg")
         
         self.main_loop()
 
@@ -63,7 +67,7 @@ class App:
             
             # Use shader program and bind VAO for triangle
             glUseProgram(self.shader)
-            self.glitch_texture.use()
+            self.image_texture.use()
             glBindVertexArray(self.triangle.vao)
             
             self.triangle.update(current_time)
@@ -80,7 +84,7 @@ class App:
 
     def quit(self):
         self.triangle.delete()
-        self.glitch_texture.delete()
+        self.image_texture.delete()
         glDeleteProgram(self.shader)
         pygame.quit()
 
@@ -176,7 +180,7 @@ class Material:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         
         # Load image and convert for OpenGL
-        image = pygame.image.load(filepath).convert()
+        image = pygame.image.load(filepath).convert_alpha()
         image_width, image_height = image.get_rect().size
         image_data = pygame.image.tostring(image, "RGBA")
         
