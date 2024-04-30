@@ -32,7 +32,7 @@ class App:
         self.triangle = Triangle()
         
         # Load glitch texture
-        self.image_texture = Material("images/middle_finger.jpg")
+        self.image_texture = Material("images/me.jpg")
         
         self.main_loop()
 
@@ -96,9 +96,9 @@ class Triangle:
         # convert to type readable by graphics card
         # x, y, z, r, g, b, s, t
         self.vertices = np.array([
-            -0.5, -0.5, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
-             0.5, -0.5, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
-             0.0,  0.5, 0.0, 0.0, 0.0, 1.0, 0.5, 0.0
+            -0.5, -0.75, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+             0.5, -0.75, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+             0.0,  0.75, 0.0, 0.0, 0.0, 1.0, 0.5, 0.0
         ], dtype = np.float32)
         
         # create VAO and VBO and binds them
@@ -127,16 +127,16 @@ class Triangle:
         
         colour_speed = 4
         position_speed = 2
-        radius = 0.1
+        radius = 0.01
         brightness = 1
         
         # Update vertex positions to move in a circle
-        self.vertices[0 * vertex_stride + 0] = math.sin(position_speed * time + 1.0) * radius - 0.5
-        self.vertices[0 * vertex_stride + 1] = math.cos(position_speed * time + 1.0) * radius - 0.5
-        self.vertices[1 * vertex_stride + 0] = math.sin(position_speed * time + 2.0) * radius + 0.5
-        self.vertices[1 * vertex_stride + 1] = math.cos(position_speed * time + 2.0) * radius - 0.5
+        self.vertices[0 * vertex_stride + 0] = math.sin(position_speed * time + 1.0) * radius - 0.75
+        self.vertices[0 * vertex_stride + 1] = math.cos(position_speed * time + 1.0) * radius - 0.75
+        self.vertices[1 * vertex_stride + 0] = math.sin(position_speed * time + 2.0) * radius + 0.75
+        self.vertices[1 * vertex_stride + 1] = math.cos(position_speed * time + 2.0) * radius - 0.75
         self.vertices[2 * vertex_stride + 0] = math.sin(position_speed * time + 3.0) * radius      
-        self.vertices[2 * vertex_stride + 1] = math.cos(position_speed * time + 3.0) * radius + 0.5
+        self.vertices[2 * vertex_stride + 1] = math.cos(position_speed * time + 3.0) * radius + 0.75
         
         # Update colors to cycle through RGB smoothly
         self.vertices[0 * vertex_stride + 3 : 0 * vertex_stride + 6] = (
