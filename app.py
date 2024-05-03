@@ -42,7 +42,7 @@ class App:
         self.cube_mesh = CubeMesh()
         
         # Load texture image
-        self.image_texture = Material("images/wood.jpeg")
+        self.image_texture = Material("images/me.jpg")
         
         # Define a 4x4 projection transform with params
         projection_transform = pyrr.matrix44.create_perspective_projection(
@@ -86,14 +86,14 @@ class App:
                     running = False
                     
             # Update cube
-            self.cube.eulers[2] += 1
+            self.cube.eulers[2] += 0.25
             if (self.cube.eulers[2] > 360):
                 self.cube.eulers[2] -= 360
 
             # Refresh screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
             
-            # Use shader program and bind VAO for cube
+            # Use shader program
             glUseProgram(self.shader)
             self.image_texture.use()
             
@@ -128,7 +128,7 @@ class App:
             pygame.display.flip()
 
             # Timing
-            self.clock.tick(60)
+            self.clock.tick(360)
 
         self.quit()
 
@@ -215,7 +215,7 @@ class CubeMesh:
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
         
         # set up texture attribute
-        glEnableVertexAttribArray(2)
+        glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
         
     def delete(self):
