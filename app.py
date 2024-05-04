@@ -7,7 +7,7 @@ import time
 import math
 import random
 
-from Cube import Cube, CubeMesh
+from Cube import Cube, Mesh
 from Material import Material
 
 APP_SIZE = (1280, 720)
@@ -29,11 +29,11 @@ class App:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         
         # Load and use shaders from files
-        self.shader = self.create_shader("shaders/vertex.vert", "shaders/fragment.frag")
+        self.shader = self.create_shader('shaders/vertex.vert', 'shaders/fragment.frag')
         glUseProgram(self.shader)
         
         # Set texture unit 0 as active uniform sampler location for texture named 'imageTexture' in fragment shader
-        glUniform1i(glGetUniformLocation(self.shader, "imageTexture"), 0)
+        glUniform1i(glGetUniformLocation(self.shader, 'imageTexture'), 0)
         
         # Define cube
         self.cube = Cube(
@@ -41,10 +41,10 @@ class App:
             eulers=[0, 0, 0]
         )
         
-        self.cube_mesh = CubeMesh()
+        self.cube_mesh = Mesh('models/cube.obj')
         
         # Load texture image
-        self.image_texture = Material("images/me.jpg")
+        self.image_texture = Material('images/me.jpg')
         
         # Define a 4x4 projection transform with params
         projection_transform = pyrr.matrix44.create_perspective_projection(
@@ -53,11 +53,11 @@ class App:
         
         #! add comment
         glUniformMatrix4fv(
-            glGetUniformLocation(self.shader, "projection"), 1, GL_FALSE, projection_transform
+            glGetUniformLocation(self.shader, 'projection'), 1, GL_FALSE, projection_transform
         )
         
         # Get location in shader where model matrix should go and stores it for efficiency
-        self.model_matrix_location = glGetUniformLocation(self.shader, "model")
+        self.model_matrix_location = glGetUniformLocation(self.shader, 'model')
         
         self.main_loop()
 
@@ -140,5 +140,5 @@ class App:
         glDeleteProgram(self.shader)
         pygame.quit()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     myApp = App()
