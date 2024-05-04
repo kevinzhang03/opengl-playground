@@ -6,7 +6,9 @@ import pyrr
 import time
 import math
 import random
-import ctypes
+
+from Cube import Cube, CubeMesh
+from Material import Material
 
 APP_SIZE = (1280, 720)
 
@@ -86,7 +88,7 @@ class App:
                     running = False
                     
             # Update cube
-            self.cube.eulers[2] += 0.25
+            self.cube.eulers[2] += 1
             if (self.cube.eulers[2] > 360):
                 self.cube.eulers[2] -= 360
 
@@ -128,7 +130,7 @@ class App:
             pygame.display.flip()
 
             # Timing
-            self.clock.tick(360)
+            self.clock.tick(60)
 
         self.quit()
 
@@ -137,123 +139,6 @@ class App:
         self.image_texture.delete()
         glDeleteProgram(self.shader)
         pygame.quit()
-
-class Cube:
-    
-    def __init__(self, position, eulers) -> None:
-        self.position = np.array(position, dtype=np.float32)
-        self.eulers = np.array(eulers, dtype=np.float32)
-
-class CubeMesh:
-    
-    def __init__(self) -> None:# convert to type readable by graphics card
-        # x, y, z, s, t
-        self.vertices = np.array([
-            -0.5, -0.5, -0.5, 0, 0,
-             0.5, -0.5, -0.5, 1, 0,
-             0.5,  0.5, -0.5, 1, 1,
-
-             0.5,  0.5, -0.5, 1, 1,
-            -0.5,  0.5, -0.5, 0, 1,
-            -0.5, -0.5, -0.5, 0, 0,
-
-            -0.5, -0.5,  0.5, 0, 0,
-             0.5, -0.5,  0.5, 1, 0,
-             0.5,  0.5,  0.5, 1, 1,
-
-             0.5,  0.5,  0.5, 1, 1,
-            -0.5,  0.5,  0.5, 0, 1,
-            -0.5, -0.5,  0.5, 0, 0,
-
-            -0.5,  0.5,  0.5, 1, 0,
-            -0.5,  0.5, -0.5, 1, 1,
-            -0.5, -0.5, -0.5, 0, 1,
-
-            -0.5, -0.5, -0.5, 0, 1,
-            -0.5, -0.5,  0.5, 0, 0,
-            -0.5,  0.5,  0.5, 1, 0,
-
-             0.5,  0.5,  0.5, 1, 0,
-             0.5,  0.5, -0.5, 1, 1,
-             0.5, -0.5, -0.5, 0, 1,
-
-             0.5, -0.5, -0.5, 0, 1,
-             0.5, -0.5,  0.5, 0, 0,
-             0.5,  0.5,  0.5, 1, 0,
-
-            -0.5, -0.5, -0.5, 0, 1,
-             0.5, -0.5, -0.5, 1, 1,
-             0.5, -0.5,  0.5, 1, 0,
-
-             0.5, -0.5,  0.5, 1, 0,
-            -0.5, -0.5,  0.5, 0, 0,
-            -0.5, -0.5, -0.5, 0, 1,
-
-            -0.5,  0.5, -0.5, 0, 1,
-             0.5,  0.5, -0.5, 1, 1,
-             0.5,  0.5,  0.5, 1, 0,
-
-             0.5,  0.5,  0.5, 1, 0,
-            -0.5,  0.5,  0.5, 0, 0,
-            -0.5,  0.5, -0.5, 0, 1,
-        ], dtype=np.float32)
-        
-        self.vertex_stride = 5
-        self.vertex_count = len(self.vertices) // 5
-        
-        # create VAO and VBO and binds them
-        self.vao = glGenVertexArrays(1)
-        glBindVertexArray(self.vao)
-        self.vbo = glGenBuffers(1)
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        
-        # send the buffer vertex data to the VBO
-        glBufferData(GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, GL_STATIC_DRAW)
-        
-        # set up position attribute
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
-        
-        # set up texture attribute
-        glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
-        
-    def delete(self):
-        # delete VAO and VBO
-        glDeleteVertexArrays(1, (self.vao, ))
-        glDeleteBuffers(1, (self.vbo, ))
-
-class Material:
-    
-    def __init__(self, filepath) -> None:
-        # Generate texture ID and bind as 2D texture
-        self.texture = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        
-        # Set texture wrapping to repeat for S and T axes
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        
-        # Set texture filtering (scaling), nearest for minimizing, linear for magnifying
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        
-        # Load image and convert for OpenGL
-        image = pygame.image.load(filepath).convert_alpha()
-        image_width, image_height = image.get_rect().size
-        image_data = pygame.image.tostring(image, "RGBA")
-        
-        # Create new texture from image data, setting it as the current texture of the bound texture object
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
-        glGenerateMipmap(GL_TEXTURE_2D)
-        
-    def use(self):
-        # Activate and bind the first texture unit
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        
-    def delete(self):
-        glDeleteTextures(1, (self.texture, ))
 
 if __name__ == "__main__":
     myApp = App()
