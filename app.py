@@ -130,7 +130,7 @@ class App:
             pygame.display.flip()
 
             # Timing
-            self.clock.tick(60)
+            # self.clock.tick(60)
 
         self.quit()
 

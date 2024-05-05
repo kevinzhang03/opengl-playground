@@ -11,9 +11,11 @@ class Cube:
 class Mesh:
     
     def __init__(self, filename) -> None:
+        self.vertex_stride = 8
+        
         # x, y, z, s, t, nx, ny, nz
         vertices = self.load_mesh(filename)
-        self.vertex_count = len(vertices) // 8
+        self.vertex_count = len(vertices) // self.vertex_stride
         vertices = np.array(vertices, dtype=np.float32)
         
         # create VAO and VBO and binds them
@@ -27,11 +29,11 @@ class Mesh:
         
         # Position
         glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * self.vertex_stride, ctypes.c_void_p(0))
         
         # Texture
         glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * self.vertex_stride, ctypes.c_void_p(12))
         
     def load_mesh(self, filename: str) -> list[float]:
         v  = []
@@ -52,7 +54,6 @@ class Mesh:
                 elif words and words[0] == 'f':
                     self.read_face_data(words, v, vt, vn, vertices)
                 
-        print(vertices)
         return vertices
     
     def read_mesh_data(self, words: list[str]) -> list[float]:
