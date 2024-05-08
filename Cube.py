@@ -2,6 +2,9 @@ from OpenGL.GL import *
 from collections import defaultdict
 import numpy as np
 import ctypes
+import pathlib
+
+DEBUG_PATH = f'{pathlib.Path(__file__).parent.resolve()}/debug/vert1.txt'
 
 class Cube:
     
@@ -23,7 +26,7 @@ class Mesh:
         # create VAO and VBO and binds them
         self.vao = glGenVertexArrays(1)
         glBindVertexArray(self.vao)
-        
+
         # vertices
         self.vbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
@@ -48,7 +51,14 @@ class Mesh:
                 elif words and words[0] == 'f':
                     self.read_face_data(words, vertices)
         
+        # self.debug_print_vertices(vertices)
+        # print(vertices)
         return vertices
+    
+    def debug_print_vertices(self, vertices: list[float]) -> None:
+        with open(DEBUG_PATH, 'w') as f:
+            # Write the floats to the file with a newline every eighth number
+            f.write('\n'.join([' '.join(map(str, vertices[i:i+8])) for i in range(0, len(vertices), 8)]))
     
     def read_mesh_data(self, words: list[str]) -> list[float]:
         return [float(word) for word in words[1:] if word]

@@ -4,13 +4,13 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 import numpy as np
 import pyrr
 import time
-import math
-import random
+import pathlib
 
 from Cube import Cube, Mesh
 from Material import Material
 
 APP_SIZE = (1280, 720)
+APP_PATH = pathlib.Path(__file__).parent.resolve()
 
 class App:
 
@@ -29,7 +29,7 @@ class App:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         
         # Load and use shaders from files
-        self.shader = self.create_shader('shaders/vertex.vert', 'shaders/fragment.frag')
+        self.shader = self.create_shader(f'{APP_PATH}/shaders/vertex.vert', f'{APP_PATH}/shaders/fragment.frag')
         glUseProgram(self.shader)
         
         # Set texture unit 0 as active uniform sampler location for texture named 'imageTexture' in fragment shader
@@ -41,10 +41,10 @@ class App:
             eulers=[0, 0, 0]
         )
         
-        self.cube_mesh = Mesh('models/cube.obj')
+        self.cube_mesh = Mesh(f'{APP_PATH}/models/cube.obj')
         
         # Load texture image
-        self.image_texture = Material('images/me.jpg')
+        self.image_texture = Material(f'{APP_PATH}/images/me.jpg')
         
         # Define a 4x4 projection transform with params
         projection_transform = pyrr.matrix44.create_perspective_projection(
